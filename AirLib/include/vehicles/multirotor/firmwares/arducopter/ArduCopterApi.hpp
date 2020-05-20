@@ -217,6 +217,16 @@ protected:
         Utils::log("Not Implemented: commandRollPitchYawrateThrottle", Utils::kLogLevelInfo);
     }
 
+    virtual void commandRollPitchYawrateVz(float roll, float pitch, float yaw_rate, float vz) override
+    {
+        unused(roll);
+        unused(pitch);
+        unused(yaw_rate);
+        unused(vz);
+        Utils::log("Not Implemented: commandRollPitchYawrateVz", Utils::kLogLevelInfo);
+    }
+
+
     virtual void commandRollPitchYawZ(float roll, float pitch, float yaw, float z) override
     {
         unused(roll);

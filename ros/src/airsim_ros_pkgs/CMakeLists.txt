@@ -46,6 +46,7 @@ add_message_files(
   GPSYaw.msg
   VelCmd.msg
   VelCmdGroup.msg
+  RPYrVzCmd.msg
 )
 
 add_service_files(

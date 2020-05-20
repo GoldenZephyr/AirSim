@@ -105,6 +105,12 @@ MultirotorRpcLibClient* MultirotorRpcLibClient::moveByRollPitchYawrateZAsync(flo
     return this;
 }
 
+MultirotorRpcLibClient* MultirotorRpcLibClient::moveByRollPitchYawrateVzAsync(float roll, float pitch, float yaw_rate, float vz, float duration, const std::string& vehicle_name)
+{
+    pimpl_->last_future = static_cast<rpc::client*>(getClient())->async_call("moveByRollPitchYawrateVz", roll, pitch, yaw_rate, vz, duration, vehicle_name);
+    return this;
+}
+
 MultirotorRpcLibClient* MultirotorRpcLibClient::moveByAngleRatesZAsync(float roll_rate, float pitch_rate, float yaw_rate, float z, float duration, const std::string& vehicle_name)
 {
     pimpl_->last_future = static_cast<rpc::client*>(getClient())->async_call("moveByAngleRatesZ", roll_rate, pitch_rate, yaw_rate, z, duration, vehicle_name);

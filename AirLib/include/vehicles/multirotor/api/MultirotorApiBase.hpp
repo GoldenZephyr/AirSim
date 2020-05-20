@@ -27,6 +27,7 @@ protected: //must be implemented
     virtual void commandMotorPWMs(float front_right_pwm, float rear_left_pwm, float front_left_pwm, float rear_right_pwm) = 0;
     virtual void commandRollPitchYawrateThrottle(float roll, float pitch, float yaw_rate, float throttle) = 0;
     virtual void commandRollPitchYawZ(float roll, float pitch, float yaw, float z) = 0;
+    virtual void commandRollPitchYawrateVz(float roll, float pitch, float yawrate, float vz) = 0; // my addition
     virtual void commandRollPitchYawThrottle(float roll, float pitch, float yaw, float throttle) = 0;
     virtual void commandRollPitchYawrateZ(float roll, float pitch, float yaw_rate, float z) = 0;
     virtual void commandAngleRatesZ(float roll_rate, float pitch_rate, float yaw_rate, float z) = 0;
@@ -94,6 +95,7 @@ public: //these APIs uses above low level APIs
     virtual bool moveByRollPitchYawThrottle(float roll, float pitch, float yaw, float throttle, float duration);
     virtual bool moveByRollPitchYawrateThrottle(float roll, float pitch, float yaw_rate, float throttle, float duration);
     virtual bool moveByRollPitchYawrateZ(float roll, float pitch, float yaw_rate, float z, float duration);
+    virtual bool moveByRollPitchYawrateVz(float roll, float pitch, float yaw_rate, float vz, float duration);
     virtual bool moveByAngleRatesZ(float roll_rate, float pitch_rate, float yaw_rate, float z, float duration);
     virtual bool moveByAngleRatesThrottle(float roll_rate, float pitch_rate, float yaw_rate, float throttle, float duration);
     virtual bool moveByVelocity(float vx, float vy, float vz, float duration, DrivetrainType drivetrain, const YawMode& yaw_mode);
@@ -150,6 +152,7 @@ protected: //utility methods
     virtual void moveByRollPitchYawThrottleInternal(float roll, float pitch, float yaw, float throttle);
     virtual void moveByRollPitchYawrateThrottleInternal(float roll, float pitch, float yaw_rate, float throttle);
     virtual void moveByRollPitchYawrateZInternal(float roll, float pitch, float yaw_rate, float z);
+    virtual void moveByRollPitchYawrateVzInternal(float roll, float pitch, float yaw_rate, float vz);
     virtual void moveByAngleRatesZInternal(float roll_rate, float pitch_rate, float yaw_rate, float z);
     virtual void moveByAngleRatesThrottleInternal(float roll_rate, float pitch_rate, float yaw_rate, float throttle);
     virtual void moveByVelocityInternal(float vx, float vy, float vz, const YawMode& yaw_mode);

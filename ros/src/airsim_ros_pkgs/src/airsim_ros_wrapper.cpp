@@ -132,10 +132,14 @@ void AirsimROSWrapper::create_ros_pubs_from_settings_json()
 
         // bind to a single callback. todo optimal subs queue length
         // bind multiple topics to a single callback, but keep track of which vehicle name it was by passing curr_vehicle_name as the 2nd argument 
+
         multirotor_ros.vel_cmd_body_frame_sub = nh_private_.subscribe<airsim_ros_pkgs::VelCmd>(curr_vehicle_name + "/vel_cmd_body_frame", 1, 
             boost::bind(&AirsimROSWrapper::vel_cmd_body_frame_cb, this, _1, multirotor_ros.vehicle_name)); // todo ros::TransportHints().tcpNoDelay();
         multirotor_ros.vel_cmd_world_frame_sub = nh_private_.subscribe<airsim_ros_pkgs::VelCmd>(curr_vehicle_name + "/vel_cmd_world_frame", 1, 
             boost::bind(&AirsimROSWrapper::vel_cmd_world_frame_cb, this, _1, multirotor_ros.vehicle_name));
+
+        multirotor_ros.rpyrvz_cmd_body_frame_sub = nh_private_.subscribe<airsim_ros_pkgs::RPYrVzCmd>(curr_vehicle_name + "/rpyrvz_cmd_body_frame", 1, 
+            boost::bind(&AirsimROSWrapper::rpyrvz_cmd_body_frame_cb, this, _1, multirotor_ros.vehicle_name));
 
         multirotor_ros.takeoff_srvr = nh_private_.advertiseService<airsim_ros_pkgs::Takeoff::Request, airsim_ros_pkgs::Takeoff::Response>(curr_vehicle_name + "/takeoff", 
             boost::bind(&AirsimROSWrapper::takeoff_srv_cb, this, _1, _2, multirotor_ros.vehicle_name) );
@@ -440,6 +444,25 @@ void AirsimROSWrapper::vel_cmd_body_frame_cb(const airsim_ros_pkgs::VelCmd::Cons
     // airsim uses degrees
     multirotor_ros_vec_[vehicle_idx].vel_cmd.yaw_mode.yaw_or_rate = math_common::rad2deg(msg->twist.angular.z);
     multirotor_ros_vec_[vehicle_idx].has_vel_cmd = true;
+}
+
+void AirsimROSWrapper::rpyrvz_cmd_body_frame_cb(const airsim_ros_pkgs::RPYrVzCmd::ConstPtr& msg, const std::string& vehicle_name)
+{
+    std::lock_guard<std::recursive_mutex> guard(drone_control_mutex_);
+
+    int vehicle_idx = vehicle_name_idx_map_[vehicle_name];
+
+    std::cout << msg->roll << "," << msg->pitch << "," << msg->vz << "," << msg->yaw_rate << std::endl;
+
+    // todo do actual body frame?
+    multirotor_ros_vec_[vehicle_idx].rpyrvz_cmd.roll = msg->roll;
+    multirotor_ros_vec_[vehicle_idx].rpyrvz_cmd.pitch = msg->pitch;
+    multirotor_ros_vec_[vehicle_idx].rpyrvz_cmd.vz = msg->vz;
+    multirotor_ros_vec_[vehicle_idx].rpyrvz_cmd.drivetrain = msr::airlib::DrivetrainType::MaxDegreeOfFreedom;
+    multirotor_ros_vec_[vehicle_idx].rpyrvz_cmd.yaw_mode.is_rate = true;
+    // airsim uses degrees
+    multirotor_ros_vec_[vehicle_idx].rpyrvz_cmd.yaw_mode.yaw_or_rate = math_common::rad2deg(msg->yaw_rate);
+    multirotor_ros_vec_[vehicle_idx].has_rpyrvz_cmd = true;
 }
 
 void AirsimROSWrapper::vel_cmd_group_body_frame_cb(const airsim_ros_pkgs::VelCmdGroup& msg)
@@ -765,9 +788,16 @@ void AirsimROSWrapper::drone_state_timer_cb(const ros::TimerEvent& event)
                 airsim_client_.moveByVelocityAsync(multirotor_ros.vel_cmd.x, multirotor_ros.vel_cmd.y, multirotor_ros.vel_cmd.z, vel_cmd_duration_, 
                     msr::airlib::DrivetrainType::MaxDegreeOfFreedom, multirotor_ros.vel_cmd.yaw_mode, multirotor_ros.vehicle_name);
                 lck.unlock();
+            } else if (multirotor_ros.has_rpyrvz_cmd) {
+                std::cout << "multirotor has rpyrvz_cmd" << std::endl;
+                std::unique_lock<std::recursive_mutex> lck(drone_control_mutex_);
+                airsim_client_.moveByRollPitchYawrateVzAsync(multirotor_ros.rpyrvz_cmd.roll, multirotor_ros.rpyrvz_cmd.pitch,
+                     multirotor_ros.rpyrvz_cmd.yaw_mode.yaw_or_rate, multirotor_ros.rpyrvz_cmd.vz, vel_cmd_duration_, multirotor_ros.vehicle_name);
+                lck.unlock();
             }
 
             // "clear" control cmds
+            multirotor_ros.has_rpyrvz_cmd = false;
             multirotor_ros.has_vel_cmd = false;
         }
 

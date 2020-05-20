@@ -28,6 +28,7 @@ public:
     MultirotorRpcLibClient* moveByRollPitchYawThrottleAsync(float roll, float pitch, float yaw, float throttle, float duration, const std::string& vehicle_name = "");
     MultirotorRpcLibClient* moveByRollPitchYawrateThrottleAsync(float roll, float pitch, float yaw_rate, float throttle, float duration, const std::string& vehicle_name = "");
     MultirotorRpcLibClient* moveByRollPitchYawrateZAsync(float roll, float pitch, float yaw_rate, float z, float duration, const std::string& vehicle_name = "");
+    MultirotorRpcLibClient* moveByRollPitchYawrateVzAsync(float roll, float pitch, float yaw_rate, float vz, float duration, const std::string& vehicle_name = "");
     MultirotorRpcLibClient* moveByAngleRatesZAsync(float roll_rate, float pitch_rate, float yaw_rate, float z, float duration, const std::string& vehicle_name = "");
     MultirotorRpcLibClient* moveByAngleRatesThrottleAsync(float roll_rate, float pitch_rate, float yaw_rate, float throttle, float duration, const std::string& vehicle_name = "");
     MultirotorRpcLibClient* moveByVelocityAsync(float vx, float vy, float vz, float duration,

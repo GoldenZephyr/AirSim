@@ -526,6 +526,14 @@ protected: //methods
         checkValidVehicle();
         mav_vehicle_->moveByAttitude(roll, pitch, 0, 0, 0, yaw_rate, throttle);
     }
+    virtual void commandRollPitchYawrateVz(float roll, float pitch, float yaw_rate, float vz) override
+    {
+        unused(roll);
+        unused(pitch);
+        unused(yaw_rate);
+        unused(vz);
+        Utils::log("Not Implemented: commandRollPitchYawrateVz", Utils::kLogLevelInfo);
+    }
     virtual void commandAngleRatesZ(float roll_rate, float pitch_rate, float yaw_rate, float z) override
     {
         if (target_height_ != -z) {

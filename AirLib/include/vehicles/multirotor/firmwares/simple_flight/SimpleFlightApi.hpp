@@ -260,6 +260,18 @@ protected:
         firmware_->offboardApi().setGoalAndMode(&goal, &mode, message);
     }
 
+    virtual void commandRollPitchYawrateVz(float roll, float pitch, float yaw_rate, float vz) override
+    {
+        
+        typedef simple_flight::GoalModeType GoalModeType;
+        simple_flight::GoalMode mode(GoalModeType::AngleLevel, GoalModeType::AngleLevel, GoalModeType::AngleRate, GoalModeType::VelocityWorld);
+
+        simple_flight::Axis4r goal(roll, pitch, yaw_rate, vz);
+
+        std::string message;
+        firmware_->offboardApi().setGoalAndMode(&goal, &mode, message);
+    }
+
     virtual void commandAngleRatesZ(float roll_rate, float pitch_rate, float yaw_rate, float z) override
     {
         //Utils::log(Utils::stringf("commandRollPitchYawThrottle %f, %f, %f, %f", roll, pitch, yaw_rate, throttle));

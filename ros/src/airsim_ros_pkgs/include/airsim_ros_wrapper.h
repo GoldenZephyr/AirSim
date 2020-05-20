@@ -23,6 +23,7 @@ STRICT_MODE_ON
 #include <airsim_ros_pkgs/TakeoffGroup.h>
 #include <airsim_ros_pkgs/VelCmd.h>
 #include <airsim_ros_pkgs/VelCmdGroup.h>
+#include <airsim_ros_pkgs/RPYrVzCmd.h>
 #include <chrono>
 #include <cv_bridge/cv_bridge.h>
 #include <geometry_msgs/PoseStamped.h>
@@ -98,6 +99,17 @@ struct VelCmd
     //     vehicle_name(vehicle_name) {};
 };
 
+// Roll, Pitch, velocity Z
+struct RPYrVzCmd
+{
+    double roll;
+    double pitch;
+    double vz;
+    msr::airlib::DrivetrainType drivetrain;
+    msr::airlib::YawMode yaw_mode;
+    std::string vehicle_name;
+};
+
 struct GimbalCmd
 {
     std::string vehicle_name;
@@ -139,6 +151,7 @@ private:
     /// ROS subscriber callbacks
     void vel_cmd_world_frame_cb(const airsim_ros_pkgs::VelCmd::ConstPtr& msg, const std::string& vehicle_name);
     void vel_cmd_body_frame_cb(const airsim_ros_pkgs::VelCmd::ConstPtr& msg, const std::string& vehicle_name);
+    void rpyrvz_cmd_body_frame_cb(const airsim_ros_pkgs::RPYrVzCmd::ConstPtr& msg, const std::string& vehicle_name);
 
     void vel_cmd_group_body_frame_cb(const airsim_ros_pkgs::VelCmdGroup& msg);
     void vel_cmd_group_world_frame_cb(const airsim_ros_pkgs::VelCmdGroup& msg);
@@ -223,6 +236,7 @@ private:
         // ros::Publisher home_geo_point_pub_; // geo coord of unreal origin
 
         ros::Subscriber vel_cmd_body_frame_sub;
+        ros::Subscriber rpyrvz_cmd_body_frame_sub;
         ros::Subscriber vel_cmd_world_frame_sub;
 
         ros::ServiceServer takeoff_srvr;
@@ -235,6 +249,8 @@ private:
         sensor_msgs::NavSatFix gps_sensor_msg;
         bool has_vel_cmd;
         VelCmd vel_cmd;
+        bool has_rpyrvz_cmd;
+        RPYrVzCmd rpyrvz_cmd;
 
         std::string odom_frame_id;
         /// Status

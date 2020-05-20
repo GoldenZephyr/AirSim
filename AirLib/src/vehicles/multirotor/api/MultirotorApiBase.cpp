@@ -137,6 +137,19 @@ bool MultirotorApiBase::moveByRollPitchYawrateZ(float roll, float pitch, float y
     }, duration).isTimeout();
 }
 
+bool MultirotorApiBase::moveByRollPitchYawrateVz(float roll, float pitch, float yaw_rate, float vz, float duration)
+{
+    SingleTaskCall lock(this);
+
+    if (duration <= 0)
+        return true;
+
+    return waitForFunction([&]() {
+        moveByRollPitchYawrateVzInternal(roll, pitch, yaw_rate, vz);
+        return false; //keep moving until timeout
+    }, duration).isTimeout();
+}
+
 bool MultirotorApiBase::moveByAngleRatesZ(float roll_rate, float pitch_rate, float yaw_rate, float z, float duration)
 {
     SingleTaskCall lock(this);
@@ -565,6 +578,12 @@ void MultirotorApiBase::moveByRollPitchYawrateZInternal(float roll, float pitch,
 {
     if (safetyCheckVelocity(getVelocity()))
         commandRollPitchYawrateZ(roll, pitch, yaw_rate, z);
+}
+
+void MultirotorApiBase::moveByRollPitchYawrateVzInternal(float roll, float pitch, float yaw_rate, float vz)
+{
+    if (safetyCheckVelocity(getVelocity()))
+        commandRollPitchYawrateVz(roll, pitch, yaw_rate, vz);
 }
 
 void MultirotorApiBase::moveByAngleRatesZInternal(float roll_rate, float pitch_rate, float yaw_rate, float z)
